@@ -12,12 +12,17 @@
         <h1>英文對話練習</h1>
         
         <div id="chat-box" class="chat-box">
-            <p>點擊按鈕開始說話...</p>
+            <p>請嘗試語音輸入或在下方打字...</p>
         </div>
 
         <div class="controls">
-            <button id="start-btn">開始語音輸入</button>
-            <button id="edit-btn">編輯對話內容</button>
+            <button id="start-btn" class="mic-btn">🎤 開始語音輸入</button>
+            <button id="edit-btn" class="edit-btn">⚙️ 編輯對話</button>
+        </div>
+
+        <div class="manual-input">
+            <input type="text" id="text-input" placeholder="請在此輸入英文對話...">
+            <button id="send-btn">發送</button>
         </div>
 
         <hr>
@@ -29,10 +34,13 @@
 
     <div id="edit-modal" class="modal">
         <div class="modal-content">
-            <h3>編輯/新增對話</h3>
-            <textarea id="conversation-json" rows="10" style="width:100%"></textarea>
-            <button id="save-btn">儲存修改</button>
-            <button id="close-btn">關閉</button>
+            <h3>編輯對話內容 (JSON 格式)</h3>
+            <p style="font-size: 12px; color: #666;">格式範例: {"input": "Hello", "output": "Hi!"}</p>
+            <textarea id="conversation-json" rows="12"></textarea>
+            <div class="modal-buttons">
+                <button id="save-btn">儲存修改</button>
+                <button id="close-btn">取消</button>
+            </div>
         </div>
     </div>
 
