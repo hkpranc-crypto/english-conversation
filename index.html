@@ -2,46 +2,48 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>英文對話學習站</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container">
-        <h1>英文對話練習</h1>
+    <div id="page-chat" class="container">
+        <div class="header">
+            <h1>英文對話練習</h1>
+            <button id="go-to-manage" class="nav-btn">🗂️ 複習卡片 / 管理</button>
+        </div>
         
         <div id="chat-box" class="chat-box">
-            <p>請嘗試語音輸入或在下方打字...</p>
+            <p>請點擊下方按鈕開始練習...</p>
         </div>
 
         <div class="controls">
-            <button id="start-btn" class="mic-btn">🎤 開始語音輸入</button>
-            <button id="edit-btn" class="edit-btn">⚙️ 編輯對話</button>
+            <button id="start-btn" class="mic-btn">🎤 語音輸入</button>
         </div>
 
         <div class="manual-input">
-            <input type="text" id="text-input" placeholder="請在此輸入英文對話...">
+            <input type="text" id="text-input" placeholder="或在此輸入英文...">
             <button id="send-btn">發送</button>
+        </div>
+    </div>
+
+    <div id="page-manage" class="container" style="display: none;">
+        <div class="header">
+            <button id="back-to-chat" class="nav-btn">⬅️ 返回對話</button>
+            <h1>卡片管理</h1>
+        </div>
+
+        <div class="add-section">
+            <h3>➕ 新增對話</h3>
+            <input type="text" id="new-q" placeholder="請輸入問題 (例如: Hello)">
+            <input type="text" id="new-a" placeholder="請輸入電腦回答 (例如: Hi!)">
+            <button id="quick-add-btn">立即加入卡片</button>
         </div>
 
         <hr>
-
-        <h2>對話卡片複習</h2>
-        <div id="card-container" class="card-grid">
-            </div>
-    </div>
-
-    <div id="edit-modal" class="modal">
-        <div class="modal-content">
-            <h3>編輯對話內容 (JSON 格式)</h3>
-            <p style="font-size: 12px; color: #666;">格式範例: {"input": "Hello", "output": "Hi!"}</p>
-            <textarea id="conversation-json" rows="12"></textarea>
-            <div class="modal-buttons">
-                <button id="save-btn">儲存修改</button>
-                <button id="close-btn">取消</button>
-            </div>
-        </div>
+        <h3>🗃️ 複習卡片 (點擊可刪除)</h3>
+        <div id="card-container" class="card-grid"></div>
     </div>
 
     <script src="script.js"></script>
