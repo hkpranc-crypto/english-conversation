@@ -1,101 +1,129 @@
-// 1. 對話數據 (會保存在手機瀏覽器裡)
-let defaultConversations = [
-    { input: "Hello", output: "Hi! Nice to meet you." },
-    { input: "How are you", output: "I am doing well, how about you?" },
-    { input: "What time is it", output: "I am not a watch, but I can help you learn English!" }
+// 1. 初始化數據
+let conversations = JSON.parse(localStorage.getItem('myConversations')) || [
+    { input: "Hello", output: "Hi! How can I help you today?" },
+    { input: "How are you", output: "I am doing great!" }
 ];
 
-let conversations = JSON.parse(localStorage.getItem('myConversations')) || defaultConversations;
+// 2. 頁面切換邏輯
+const pageChat = document.getElementById('page-chat');
+const pageManage = document.getElementById('page-manage');
 
-const chatBox = document.getElementById('chat-box');
-const cardContainer = document.getElementById('card-container');
-const textInput = document.getElementById('text-input');
-const sendBtn = document.getElementById('send-btn');
+document.getElementById('go-to-manage').onclick = () => {
+    pageChat.style.display = 'none';
+    pageManage.style.display = 'block';
+    renderCards();
+};
 
-// 2. 顯示卡片
+document.getElementById('back-to-chat').onclick = () => {
+    pageManage.style.display = 'none';
+    pageChat.style.display = 'block';
+};
+
+// 3. 渲染卡片與刪除功能
 function renderCards() {
-    cardContainer.innerHTML = '';
-    conversations.forEach(item => {
+    const container = document.getElementById('card-container');
+    container.innerHTML = '';
+    conversations.forEach((item, index) => {
         const card = document.createElement('div');
         card.className = 'card';
-        card.innerHTML = `<strong>${item.input}</strong><br><small>${item.output}</small>`;
-        cardContainer.appendChild(card);
+        card.innerHTML = `<b>Q: ${item.input}</b><br><small>A: ${item.output}</small>`;
+        card.onclick = () => {
+            if(confirm('確定要刪除這張卡片嗎？')) {
+                conversations.splice(index, 1);
+                saveData();
+                renderCards();
+            }
+        };
+        container.appendChild(card);
     });
 }
-renderCards();
 
-// 3. 處理對話邏輯
-function handleResponse(userInput) {
-    userInput = userInput.toLowerCase().replace(/[?.!,]/g, ""); // 轉小寫並去掉標點
-    chatBox.innerHTML = `<p style="color:#666">你說：${userInput}</p>`;
-    
-    const match = conversations.find(c => userInput.includes(c.input.toLowerCase().replace(/[?.!,]/g, "")));
-    
-    if (match) {
-        chatBox.innerHTML += `<p style="color:#333"><b>電腦：${match.output}</b></p>`;
-        speak(match.output);
+// 4. 簡易新增功能
+document.getElementById('quick-add-btn').onclick = () => {
+    const q = document.getElementById('new-q').value.trim();
+    const a = document.getElementById('new-a').value.trim();
+    if (q && a) {
+        conversations.push({ input: q, output: a });
+        saveData();
+        document.getElementById('new-q').value = '';
+        document.getElementById('new-a').value = '';
+        alert('已成功加入！');
+        renderCards();
     } else {
-        chatBox.innerHTML += `<p style="color:orange">電腦：我不明白這句話，請到編輯區加入它。</p>`;
-        speak("I don't understand that yet.");
+        alert('問題和回答都要填寫喔！');
     }
-    chatBox.scrollTop = chatBox.scrollHeight;
+};
+
+function saveData() {
+    localStorage.setItem('myConversations', JSON.stringify(conversations));
 }
 
-// 4. 電腦發聲
+// 5. 語音輸出 (修復 iOS 靜音問題)
 function speak(text) {
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
+    utterance.rate = 0.9;
+    
+    // 解決部分安卓/iOS語音中斷問題
+    synth.cancel(); 
     synth.speak(utterance);
 }
 
-// 5. 手動輸入按鈕
-sendBtn.onclick = () => {
-    if (textInput.value.trim()) {
-        handleResponse(textInput.value);
-        textInput.value = '';
+// 6. 對話邏輯
+function handleResponse(userInput) {
+    const chatBox = document.getElementById('chat-box');
+    const cleanInput = userInput.toLowerCase().replace(/[?.!,]/g, "");
+    
+    chatBox.innerHTML += `<p class="user-msg">你說：${userInput}</p>`;
+    
+    const match = conversations.find(c => cleanInput.includes(c.input.toLowerCase().replace(/[?.!,]/g, "")));
+    
+    if (match) {
+        setTimeout(() => {
+            chatBox.innerHTML += `<p class="ai-msg">電腦：${match.output}</p>`;
+            speak(match.output);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, 500);
+    } else {
+        chatBox.innerHTML += `<p class="ai-msg" style="color:red;">電腦：我不明白這句話。</p>`;
+        speak("I don't understand.");
+    }
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// 7. 手動輸入
+document.getElementById('send-btn').onclick = () => {
+    const input = document.getElementById('text-input');
+    if (input.value) {
+        handleResponse(input.value);
+        input.value = '';
     }
 };
-textInput.onkeypress = (e) => { if (e.key === 'Enter') sendBtn.click(); };
 
-// 6. 語音辨識部分
+// 8. 語音辨識 (優化安卓相容性)
 const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-if (!Recognition) {
-    document.getElementById('start-btn').innerText = "不支援語音";
-} else {
+if (Recognition) {
     const recognition = new Recognition();
     recognition.lang = 'en-US';
+    recognition.interimResults = false;
 
     document.getElementById('start-btn').onclick = () => {
+        // iOS 必須在點擊瞬間啟動一次空的語音，來「解鎖」聲音播放
+        speak(""); 
         try {
             recognition.start();
-            chatBox.innerHTML = "<p style='color:blue;'>正在聽...請說英文</p>";
-        } catch (e) { console.log("Already started"); }
+            document.getElementById('chat-box').innerHTML += `<p style="color:blue">正在聽...</p>`;
+        } catch (e) {}
     };
 
     recognition.onresult = (event) => {
-        const result = event.results[0][0].transcript;
-        handleResponse(result);
+        handleResponse(event.results[0][0].transcript);
     };
 
     recognition.onerror = (event) => {
-        chatBox.innerHTML = `<p style='color:red;'>錯誤: ${event.error} (請檢查權限)</p>`;
+        if(event.error === 'not-allowed') {
+            alert('請檢查手機設定：\n1. 系統設定 > 隱私 > 麥克風 (開啟)\n2. 瀏覽器設定 > 權限 > 麥克風 (開啟)');
+        }
     };
 }
-
-// 7. 編輯與儲存
-const modal = document.getElementById('edit-modal');
-document.getElementById('edit-btn').onclick = () => {
-    modal.style.display = 'block';
-    document.getElementById('conversation-json').value = JSON.stringify(conversations, null, 2);
-};
-document.getElementById('save-btn').onclick = () => {
-    try {
-        conversations = JSON.parse(document.getElementById('conversation-json').value);
-        localStorage.setItem('myConversations', JSON.stringify(conversations));
-        renderCards();
-        modal.style.display = 'none';
-        alert("儲存成功！");
-    } catch (e) { alert("格式錯誤，請確保是正確的 JSON"); }
-};
-document.getElementById('close-btn').onclick = () => modal.style.display = 'none';
