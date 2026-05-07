@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文對話學習站</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>英文對話練習</h1>
+        
+        <div id="chat-box" class="chat-box">
+            <p>點擊按鈕開始說話...</p>
+        </div>
+
+        <div class="controls">
+            <button id="start-btn">開始語音輸入</button>
+            <button id="edit-btn">編輯對話內容</button>
+        </div>
+
+        <hr>
+
+        <h2>對話卡片複習</h2>
+        <div id="card-container" class="card-grid">
+            </div>
+    </div>
+
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <h3>編輯/新增對話</h3>
+            <textarea id="conversation-json" rows="10" style="width:100%"></textarea>
+            <button id="save-btn">儲存修改</button>
+            <button id="close-btn">關閉</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
