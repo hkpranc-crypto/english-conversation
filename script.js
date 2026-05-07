@@ -19,21 +19,40 @@ document.getElementById('back-to-chat').onclick = () => {
     pageChat.style.display = 'block';
 };
 
-// 3. 渲染卡片與刪除功能
+// 3. 【修正版】渲染卡片與刪除功能
 function renderCards() {
     const container = document.getElementById('card-container');
     container.innerHTML = '';
+    
     conversations.forEach((item, index) => {
         const card = document.createElement('div');
         card.className = 'card';
-        card.innerHTML = `<b>Q: ${item.input}</b><br><small>A: ${item.output}</small>`;
-        card.onclick = () => {
-            if(confirm('確定要刪除這張卡片嗎？')) {
-                conversations.splice(index, 1);
-                saveData();
-                renderCards();
+        // 加入一個明確的刪除 X 圖標
+        card.innerHTML = `
+            <div style="pointer-events: none;">
+                <b>Q: ${item.input}</b><br>
+                <small>A: ${item.output}</small>
+            </div>
+            <div class="delete-btn" data-index="${index}" style="position:absolute; top:5px; right:5px; background:#ff4757; color:white; border-radius:50%; width:20px; height:20px; text-align:center; line-height:20px; font-size:12px;">✕</div>
+        `;
+
+        // 優化手機點擊事件
+        const handleCardClick = (e) => {
+            // 如果點到的是刪除按鈕
+            if (e.target.className === 'delete-btn') {
+                const idx = e.target.getAttribute('data-index');
+                if(confirm('確定要刪除這張卡片嗎？')) {
+                    conversations.splice(idx, 1);
+                    saveData();
+                    renderCards();
+                }
+                return;
             }
+            // 否則就是點到卡片（可以用來讀出聲音）
+            speak(item.output);
         };
+
+        card.onclick = handleCardClick;
         container.appendChild(card);
     });
 }
@@ -58,14 +77,14 @@ function saveData() {
     localStorage.setItem('myConversations', JSON.stringify(conversations));
 }
 
-// 5. 語音輸出 (修復 iOS 靜音問題)
+// 5. 語音輸出
 function speak(text) {
+    if (!text) return;
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
     utterance.rate = 0.9;
     
-    // 解決部分安卓/iOS語音中斷問題
     synth.cancel(); 
     synth.speak(utterance);
 }
@@ -101,7 +120,7 @@ document.getElementById('send-btn').onclick = () => {
     }
 };
 
-// 8. 語音辨識 (優化安卓相容性)
+// 8. 語音辨識
 const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 if (Recognition) {
     const recognition = new Recognition();
@@ -109,7 +128,6 @@ if (Recognition) {
     recognition.interimResults = false;
 
     document.getElementById('start-btn').onclick = () => {
-        // iOS 必須在點擊瞬間啟動一次空的語音，來「解鎖」聲音播放
         speak(""); 
         try {
             recognition.start();
@@ -119,11 +137,5 @@ if (Recognition) {
 
     recognition.onresult = (event) => {
         handleResponse(event.results[0][0].transcript);
-    };
-
-    recognition.onerror = (event) => {
-        if(event.error === 'not-allowed') {
-            alert('請檢查手機設定：\n1. 系統設定 > 隱私 > 麥克風 (開啟)\n2. 瀏覽器設定 > 權限 > 麥克風 (開啟)');
-        }
     };
 }
