@@ -3,64 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI 英文導師</title>
+    <title>AI 英文導師 Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="page-chat" class="container">
+    <div id="page-chat" class="page-container">
         <div class="header">
-            <h1>AI 英文對話</h1>
-            <button onclick="switchPage('manage')" class="nav-btn">🗂️ 詞典/卡片</button>
-            <button onclick="switchPage('exam')" class="nav-btn" style="background:#ff9f43;color:white">📝 測驗</button>
+            <h1>AI 對話練習</h1>
+            <div class="nav-group">
+                <button onclick="showPage('manage')" class="nav-btn">🗂️ 詞典</button>
+                <button onclick="showPage('exam')" class="nav-btn" style="background:#ff9f43;color:white">📝 測驗</button>
+            </div>
         </div>
 
         <div class="mode-selector">
-            <label><input type="radio" name="mode" value="en" checked> 英對英</label>
-            <label><input type="radio" name="mode" value="cn"> 中對英 (說中文回英文)</label>
+            <label><input type="radio" name="chat-mode" value="en" checked> 英對英</label>
+            <label><input type="radio" name="chat-mode" value="cn"> 中對英</label>
         </div>
         
-        <div id="chat-box" class="chat-box"></div>
+        <div id="chat-box" class="chat-display"></div>
 
-        <div class="controls">
-            <button id="start-btn" class="mic-btn">🎤 語音輸入</button>
-        </div>
-
-        <div class="manual-input">
+        <button id="mic-btn" class="main-mic-btn">🎤 語音輸入</button>
+        <div class="input-row">
             <input type="text" id="text-input" placeholder="打字也可以...">
             <button id="send-btn">發送</button>
         </div>
     </div>
 
-    <div id="page-manage" class="container" style="display:none;">
+    <div id="page-manage" class="page-container" style="display:none;">
         <div class="header">
-            <button onclick="switchPage('chat')" class="nav-btn">⬅️ 返回</button>
-            <h1>卡片詞典 (長按編輯)</h1>
+            <button onclick="showPage('chat')" class="nav-btn">⬅️ 返回</button>
+            <h1>詞典管理</h1>
         </div>
-        <div class="add-section">
-            <input type="text" id="new-q" placeholder="問題 (英文或中文)">
-            <input type="text" id="new-a" placeholder="電腦回覆的英文">
-            <button id="quick-add-btn">新增卡片</button>
+        <div class="add-box">
+            <input type="text" id="new-q" placeholder="問題 (中/英)">
+            <input type="text" id="new-a" placeholder="電腦回覆 (英)">
+            <button onclick="addNewCard()">➕ 新增對話卡片</button>
         </div>
-        <div id="card-container" class="card-grid"></div>
+        <p style="font-size:12px; color:gray; text-align:center;">(提示：長按卡片可以「修改」或「刪除」)</p>
+        <div id="card-grid" class="card-layout"></div>
     </div>
 
-    <div id="page-exam" class="container" style="display:none;">
+    <div id="page-exam" class="page-container" style="display:none;">
         <div class="header">
-            <button onclick="switchPage('chat')" class="nav-btn">⬅️ 結束</button>
-            <h1>隨機抽問</h1>
+            <button onclick="showPage('chat')" class="nav-btn">⬅️ 結束</button>
+            <h1>翻譯測驗</h1>
         </div>
-        <div id="exam-area" class="exam-card">
-            <p id="exam-question">點擊下方按鈕開始</p>
-            <button id="exam-next-btn">下一題</button>
+        <div class="exam-box">
+            <p id="exam-prompt">準備好了嗎？</p>
+            <h2 id="exam-question">---</h2>
+            <p id="exam-feedback" style="height:30px; font-weight:bold;"></p>
+            <button id="exam-mic-btn" class="main-mic-btn" style="background:#ff9f43">🎤 說出答案</button>
+            <button onclick="nextExam()" class="secondary-btn">下一題</button>
         </div>
     </div>
 
-    <div id="action-menu" class="modal">
-        <div class="modal-content" style="text-align:center">
-            <h3 id="menu-title">操作卡片</h3>
-            <button id="delete-card-btn" style="background:#ff4757; color:white">刪除卡片</button>
-            <button onclick="closeMenu()" style="background:#ccc">取消</button>
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <h3>編輯卡片內容</h3>
+            <input type="text" id="edit-q">
+            <input type="text" id="edit-a">
+            <div class="modal-btns">
+                <button onclick="saveEdit()" style="background:#2ed573; color:white">儲存修改</button>
+                <button onclick="deleteCard()" style="background:#ff4757; color:white">刪除卡片</button>
+                <button onclick="closeModal()" style="background:#ccc">取消</button>
+            </div>
         </div>
     </div>
 
