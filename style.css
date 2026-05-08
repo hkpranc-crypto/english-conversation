@@ -1,27 +1,27 @@
-body { font-family: -apple-system, sans-serif; background-color: #f0f2f5; margin: 0; padding: 10px; }
-.container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-height: 90vh; }
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-h1 { font-size: 1.2rem; margin: 0; }
-.nav-btn { background: #eee; border: none; padding: 8px 12px; border-radius: 8px; font-size: 14px; }
+body { font-family: -apple-system, sans-serif; background: #f4f4f9; margin: 0; padding: 10px; user-select: none; }
+.container { max-width: 500px; margin: auto; background: white; padding: 15px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); min-height: 90vh; position: relative; }
+.header { display: flex; gap: 5px; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+h1 { font-size: 1.1rem; }
+.nav-btn { border: none; padding: 8px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; }
 
-.chat-box { border: 1px solid #eee; padding: 15px; height: 350px; margin-bottom: 15px; border-radius: 15px; background: #fafafa; overflow-y: auto; display: flex; flex-direction: column; }
-.chat-box p { margin: 8px 0; padding: 10px; border-radius: 10px; max-width: 80%; }
-.user-msg { align-self: flex-end; background: #d1e7ff; color: #000; }
-.ai-msg { align-self: flex-start; background: #e2e3e5; color: #000; font-weight: bold; }
+.mode-selector { display: flex; justify-content: space-around; background: #eee; padding: 10px; border-radius: 10px; margin-bottom: 10px; font-size: 13px; }
 
-.controls { margin-bottom: 15px; }
-.mic-btn { width: 100%; padding: 15px; background: #ff4757; color: white; border-radius: 12px; font-size: 18px; border: none; box-shadow: 0 4px #c0392b; }
-.mic-btn:active { box-shadow: 0 0; transform: translateY(4px); }
+.chat-box { height: 350px; overflow-y: auto; border: 1px solid #f0f0f0; border-radius: 15px; padding: 10px; background: #fafafa; margin-bottom: 10px; }
+.user-msg { background: #007aff; color: white; align-self: flex-end; margin: 5px; padding: 10px; border-radius: 15px; max-width: 80%; float: right; clear: both; }
+.ai-msg { background: #e9e9eb; color: black; align-self: flex-start; margin: 5px; padding: 10px; border-radius: 15px; max-width: 80%; float: left; clear: both; }
 
-.manual-input { display: flex; gap: 8px; }
-.manual-input input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 10px; }
-#send-btn { background: #2ed573; color: white; border: none; padding: 0 20px; border-radius: 10px; }
-
-/* 管理頁面樣式 */
-.add-section { background: #f9f9f9; padding: 15px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; }
-.add-section input { padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
-#quick-add-btn { background: #1e90ff; color: white; border: none; padding: 12px; border-radius: 8px; }
+.mic-btn { width: 100%; padding: 15px; background: #ff4757; color: white; border-radius: 15px; font-size: 1.2rem; border: none; margin-bottom: 10px; }
+.manual-input { display: flex; gap: 5px; }
+.manual-input input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; }
 
 .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-.card { background: white; border: 1px solid #eee; padding: 10px; border-radius: 10px; font-size: 13px; position: relative; }
-.card::after { content: '🗑️'; position: absolute; top: 5px; right: 5px; opacity: 0.3; }
+.card { background: white; border: 1px solid #ddd; padding: 10px; border-radius: 12px; font-size: 13px; transition: background 0.2s; }
+.card:active { background: #eee; }
+
+.exam-card { text-align: center; padding: 40px 20px; border: 2px dashed #ff9f43; border-radius: 20px; margin-top: 50px; }
+#exam-question { font-size: 1.5rem; font-weight: bold; color: #333; }
+#exam-next-btn { background: #ff9f43; color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1rem; }
+
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; }
+.modal-content { background: white; width: 80%; margin: 200px auto; padding: 20px; border-radius: 15px; }
+.modal-content button { width: 100%; margin-top: 10px; padding: 12px; border: none; border-radius: 10px; }
