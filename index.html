@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI 英文導師 Pro</title>
+    <title>AI 雙語導師 Pro</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,14 +16,22 @@
                 <button onclick="showPage('exam')" class="nav-btn" style="background:#ff9f43;color:white">📝 測驗</button>
             </div>
         </div>
-        <div class="mode-selector">
-            <label><input type="radio" name="chat-mode" value="en" checked> 英對英</label>
-            <label><input type="radio" name="chat-mode" value="cn"> 中對英</label>
+
+        <!-- 模式切換 -->
+        <div class="mode-box">
+            <p>選擇模式：</p>
+            <select id="practice-mode">
+                <option value="cn_to_en">1. 我說中文 ➔ 電腦回英文</option>
+                <option value="en_q_to_cn_a">2. 我問英文 ➔ 電腦答中文</option>
+                <option value="en_to_en">3. 我問英文 ➔ 電腦答英文</option>
+            </select>
         </div>
+        
         <div id="chat-box" class="chat-display"></div>
-        <button id="mic-btn" class="main-mic-btn">🎤 語音輸入</button>
+
+        <button id="mic-btn" class="main-mic-btn">🎤 開始說話</button>
         <div class="input-row">
-            <input type="text" id="text-input" placeholder="打字也可以...">
+            <input type="text" id="text-input" placeholder="輸入文字進行比對...">
             <button id="send-btn">發送</button>
         </div>
     </div>
@@ -33,38 +41,57 @@
             <button onclick="showPage('chat')" class="nav-btn">⬅️ 返回</button>
             <h1>詞典管理</h1>
         </div>
-        <div class="add-box">
-            <input type="text" id="new-q" placeholder="問題 (中/英)">
-            <input type="text" id="new-a" placeholder="電腦回覆 (英)">
-            <button id="add-card-btn">➕ 新增對話卡片</button>
+        
+        <!-- 分類過濾器 -->
+        <div class="filter-box">
+            <select id="category-filter" onchange="renderCards()">
+                <option value="All">所有分類</option>
+                <option value="Greetings">基本問候</option>
+                <option value="Daily">日常生活</option>
+                <option value="Shopping">購物服務</option>
+                <option value="Eating">餐飲飲食</option>
+                <option value="Travel">旅遊交通</option>
+                <option value="Social">社交計劃</option>
+                <option value="Work">工作辦公</option>
+                <option value="Health">健康心情</option>
+                <option value="Help">請求幫助</option>
+                <option value="Opinions">意見偏好</option>
+            </select>
         </div>
+
         <div id="card-grid" class="card-layout"></div>
     </div>
 
-    <div id="page-exam" class="page-container" style="display:none;">
-        <div class="header">
-            <button onclick="showPage('chat')" class="nav-btn">⬅️ 結束</button>
-            <h1>翻譯測驗</h1>
-        </div>
-        <div class="exam-box">
-            <p id="exam-prompt">準備好了嗎？</p>
-            <h2 id="exam-question">---</h2>
-            <p id="exam-feedback" style="height:30px; font-weight:bold; margin:10px 0;"></p>
-            <button id="exam-mic-btn" class="main-mic-btn" style="background:#ff9f43">🎤 說出答案</button>
-            <button id="next-exam-btn" class="secondary-btn">下一題</button>
+    <!-- 編輯/新增 彈窗 -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">編輯卡片</h3>
+            <select id="edit-cat">
+                <option value="Greetings">基本問候</option>
+                <option value="Daily">日常生活</option>
+                <option value="Shopping">購物服務</option>
+                <!-- ... 其他省略 -->
+            </select>
+            <input type="text" id="edit-q-en" placeholder="問題 (英)">
+            <input type="text" id="edit-q-cn" placeholder="問題 (中)">
+            <input type="text" id="edit-a-en" placeholder="回答 (英)">
+            <input type="text" id="edit-a-cn" placeholder="回答 (中)">
+            <div class="modal-btns">
+                <button id="save-edit-btn" style="background:#2ed573; color:white">儲存</button>
+                <button id="delete-card-btn" style="background:#ff4757; color:white">刪除</button>
+                <button onclick="closeModal()" style="background:#ccc">取消</button>
+            </div>
         </div>
     </div>
 
-    <div id="edit-modal" class="modal">
-        <div class="modal-content">
-            <h3>編輯卡片內容</h3>
-            <input type="text" id="edit-q">
-            <input type="text" id="edit-a">
-            <div class="modal-btns">
-                <button id="save-edit-btn" style="background:#2ed573; color:white">儲存修改</button>
-                <button id="delete-card-btn" style="background:#ff4757; color:white">刪除卡片</button>
-                <button onclick="closeModal()" style="background:#ccc">取消</button>
-            </div>
+    <!-- 測驗頁面保持基本功能 -->
+    <div id="page-exam" class="page-container" style="display:none;">
+        <div class="header"><button onclick="showPage('chat')" class="nav-btn">⬅️ 結束</button><h1>測驗</h1></div>
+        <div class="exam-box">
+            <h2 id="exam-question">---</h2>
+            <p id="exam-feedback"></p>
+            <button id="exam-mic-btn" class="main-mic-btn" style="background:#ff9f43">🎤 說出英文答案</button>
+            <button id="next-exam-btn" class="secondary-btn">下一題</button>
         </div>
     </div>
 
